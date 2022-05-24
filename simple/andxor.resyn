@@ -1,0 +1,14 @@
+resyn 0 2 2 5
+10100
+00110
+01001
+00100
+10010
+00000
+sol bestAIG aig 3
+2 4 3 5 7 9 6 10
+sol bestXAG xag 2
+2 4 4 2 6 8
+c
+t1 = 00100 (d1 AND d2)
+t2 = 10010 (d1 XOR d2)

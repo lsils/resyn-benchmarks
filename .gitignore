@@ -2,3 +2,7 @@
 
 **/*~
 **/.DS_Store
+
+**/*.dSYM
+verifier/verify
+

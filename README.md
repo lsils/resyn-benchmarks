@@ -8,7 +8,7 @@ The divisor functions and the target function are represented by simulation sign
 The (single-output, completely-specified) resynthesis problem is generalized in two aspects: (1) incompletely-specified divisors and (2) multiple target functions with interdependent don't-care relations.
 
 ## Format
-The benchmarks are stored in files with the `.resyn` extension. The format consists of (1) the mandatory problem specification, (2) optional solution record(s), and (3) optional comment section.
+The benchmarks are stored in files with the `.resyn` extension. The format consists of (1) the mandatory problem specification, (2) optional solution record(s), and (3) optional comment section. Empty lines may be added to enhance readability and should be ignored by a parser.
 
 #### Problem
 The benchmark format starts with a line of the header:
@@ -46,17 +46,17 @@ With `1 + I + N + 2^T` lines, a generalized resynthesis problem is specified. A 
 #### Possible/best solution
 A benchmark may be delivered with one or multiple solution(s) in form of dependency circuit(s). A solution record starts from a solution header:
 ```
-sol NAME TYPE K
+solution NAME TYPE K
 ```
 where `NAME` is an arbitrary string without white space to identify different solutions,  
-`TYPE := {aig | xag | mig | xmg}` represents the type of the dependency circuit,  
+`TYPE := {aig | xag | mig}` represents the type of the dependency circuit,  
 and `K` is the size of the circuit (number of gates).
 
-Then, the solution circuit is written as a list of literals. A literal is a number `(2 * i + c)`, where `i` is an index, with 0 indexing the constant 0, 1 to `(I + N)` indexing the divisors, and all successive indexes for gates in the dependency circuit. A gate is represented by a pair (for aig and xag) or triple (for mig and xmg) of literals of their fanins. (For XAGs, an AND gate is represented by a pair of literals where the first literal is smaller than the second one, whereas the opposite represents an XOR gate.) After all gates are listed, outputs realizing the target functions are listed, also in terms of literals.
+Then, the solution circuit is written as a list of literals. A literal is a number `(2 * i + c)`, where `i` is an index, with 0 indexing the constant 0, 1 to `(I + N)` indexing the divisors, and all successive indexes for gates in the dependency circuit. A gate is represented by a pair (for aig and xag) or triple (for mig) of literals of their fanins. (For XAGs, an AND gate is represented by a pair of literals where the first literal is smaller than the second one, whereas the opposite represents an XOR gate.) After all gates are listed, outputs realizing the target functions are listed, also in terms of literals.
 
 For example, the following records a solution to a resynthesis problem with `I = 0, N = 4` and `T = 1`, which is an XAG consisting of 3 gates and having the output function `(d1 AND d2) XOR (d3 AND d4)`:
 ```
-sol example xag 3
+solution example xag 3
 2 4 6 8 12 10 14
 ```
 

@@ -4,9 +4,12 @@ resyn 3 0 1 8
 11110000
 00010111
 11101000
-sol AIG aig 5
+
+solution AIG aig 5
 2 4 2 6 4 6 9 11 13 14 17
-sol MIG mig 1
+
+solution MIG mig 1
 2 4 6 8
+
 c
 Resynthesize the MAJ-3 function from primary inputs.

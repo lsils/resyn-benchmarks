@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 namespace resyn
 {
@@ -25,6 +26,18 @@ public:
     return _num_bits;
   }
 
+  bool get_bit( uint64_t index ) const
+  {
+    assert( index < _num_bits );
+    return ( _bits.at( index >> 6 ) >> ( index & 0x3f ) ) & 0x1;
+  }
+
+  bool get_mask( uint64_t index ) const
+  {
+    assert( index < _num_bits );
+    return ( _mask.at( index >> 6 ) >> ( index & 0x3f ) ) & 0x1;
+  }
+
   void write_bit( uint64_t index, bool value )
   {
     assert( index < _num_bits );
@@ -34,6 +47,24 @@ public:
     if ( value )
     {
       _bits[ith_block] |= (uint64_t)1 << index_in_block;
+    }
+  }
+
+  void print( std::ostream& os = std::cout ) const
+  {
+    for ( uint64_t index = 0u; index < _num_bits; ++index )
+    {
+      if ( get_mask( index ) )
+      {
+        if ( get_bit( index ) )
+          os << "1";
+        else
+          os << "0";
+      }
+      else
+      {
+        os << "-";
+      }
     }
   }
 
@@ -52,8 +83,8 @@ public:
   std::vector<uint64_t> _bits;
 }; /* ternary_bitstream */
 
-template<typename Fn>
-ternary_bitstream unary_operation( const ternary_bitstream& first, Fn&& op_bits, Fn&& op_mask )
+template<typename Fn1, typename Fn2>
+ternary_bitstream unary_operation( const ternary_bitstream& first, Fn1&& op_bits, Fn2&& op_mask )
 {
   ternary_bitstream result( first.num_bits() );
   auto first_bits = first.begin_bits();
@@ -70,8 +101,8 @@ ternary_bitstream unary_operation( const ternary_bitstream& first, Fn&& op_bits,
   return result;
 }
 
-template<typename Fn>
-ternary_bitstream binary_operation( const ternary_bitstream& first, const ternary_bitstream& second, Fn&& op_bits, Fn&& op_mask )
+template<typename Fn1, typename Fn2>
+ternary_bitstream binary_operation( const ternary_bitstream& first, const ternary_bitstream& second, Fn1&& op_bits, Fn2&& op_mask )
 {
   assert( first.num_bits() == second.num_bits() );
 
@@ -92,18 +123,25 @@ ternary_bitstream binary_operation( const ternary_bitstream& first, const ternar
   return result;
 }
 
-inline ternary_bitstream operator~( const ternary_bitstream& first )
+inline ternary_bitstream operator!( const ternary_bitstream& first )
 {
-  return first.unary_operation( first,
+  return unary_operation( first,
     []( auto bits1, auto mask1 ) { return ~bits1 & mask1; },
     []( auto bits1, auto mask1 ) { return mask1; } );
 }
 
 inline ternary_bitstream operator&( const ternary_bitstream& first, const ternary_bitstream& second )
 {
-  return first.binary_operation( first, second,
+  return binary_operation( first, second,
     []( auto bits1, auto mask1, auto bits2, auto mask2 ) { return bits1 & bits2; },
     []( auto bits1, auto mask1, auto bits2, auto mask2 ) { return  ( mask1 & mask2 ) | ( ~bits1 & mask1 ) | ( ~bits2 & mask2 ); } );
+}
+
+inline ternary_bitstream operator^( const ternary_bitstream& first, const ternary_bitstream& second )
+{
+  return binary_operation( first, second,
+    []( auto bits1, auto mask1, auto bits2, auto mask2 ) { return ( bits1 ^ bits2 ) & ( mask1 & mask2 ); },
+    []( auto bits1, auto mask1, auto bits2, auto mask2 ) { return mask1 & mask2; } );
 }
 
 } // namespace resyn

@@ -10,9 +10,11 @@
 namespace resyn
 {
 
-inline bool verify( resynthesis_problem const& prob, index_list const& sol )
+inline bool verify( resynthesis_problem const& prob, index_list& sol )
 {
-
+  sol.simulate( prob._divs );
+  bool valid = prob.check( sol.output_tts() );
+  return valid;
 }
 
 inline bool parse_and_verify( std::string const& filename )
@@ -26,7 +28,7 @@ inline bool parse_and_verify( std::string const& filename )
   else
   {
     resynthesis_problem const prob = read_problem( in );
-    index_list const sol = read_solution( in );
+    index_list sol = read_solution( in, prob );
     in.close();
     return verify( prob, sol );
   }
@@ -49,7 +51,7 @@ inline bool parse_and_verify( std::string const& filename_resyn, std::string con
   else
   {
     resynthesis_problem const prob = read_problem( in_resyn );
-    index_list const sol = read_solution( in_sol );
+    index_list sol = read_solution( in_sol, prob );
     in_resyn.close();
     in_sol.close();
     return verify( prob, sol );

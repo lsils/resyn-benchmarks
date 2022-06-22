@@ -58,6 +58,8 @@ inline resynthesis_problem read_problem( std::istream& in )
     assert( line.size() == L );
     prob.set_specification( i, line );
   }
+
+  return prob;
 }
 
 inline index_list read_solution( std::istream& in, resynthesis_problem const& prob )
@@ -73,7 +75,7 @@ inline index_list read_solution( std::istream& in, resynthesis_problem const& pr
     split( line, strings );
     if ( strings.size() != 4 )
       continue;
-    if ( strings[0] == "sol" )
+    if ( strings[0] == "sol" || strings[0] == "solution" )
     {
       name = strings[1];
       if ( strings[2] == "aig" )
@@ -88,7 +90,7 @@ inline index_list read_solution( std::istream& in, resynthesis_problem const& pr
   std::getline( in, line );
   split( line, strings );
   std::vector<uint32_t> indices( strings.size() );
-  std::transform( strings.begin(), string.end(), indices.begin(), []( std::string str ) { return std::stoi( str ); } );
+  std::transform( strings.begin(), strings.end(), indices.begin(), []( std::string str ) { return std::stoi( str ); } );
   res.set_indices( indices );
   return res;
 }
